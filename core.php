@@ -252,6 +252,12 @@ class PageNavi_Call {
 				$paged = max( 1, floor( $query->query_vars['offset'] / $posts_per_page ) + 1 );
 				$total_pages = max( 1, ceil( $query->total_users / $posts_per_page ) );
 				break;
+			case 'comments':
+				// Comments Query
+				$posts_per_page = intval( $query->get( 'posts_per_page' ) );
+				$paged = max( 1, floor( $query->query_vars['offset'] / $query->query_vars['number'] ) + 1 );
+				$total_pages = max( 1, absint( $query->max_num_pages ) );
+				break;
 			default:
 				// WP_Query
 				$posts_per_page = intval( $query->get( 'posts_per_page' ) );
@@ -275,7 +281,13 @@ class PageNavi_Call {
 	}
 
 	function get_url( $page ) {
-		return ( 'multipart' == $this->type ) ? get_multipage_link( $page ) : get_pagenum_link( $page );
+	    if ( 'multipart' == $this->type ) {
+	        return get_multipage_link( $page );
+	    } else if ( 'comments' == $this->type ) {
+            return get_comments_pagenum_link( $page );
+        } else {
+            return get_pagenum_link( $page );
+        }
 	}
 }
 
